@@ -16,6 +16,8 @@ export function usePolling() {
       const { type, ...data } = message
 
       let endpoint = ''
+      let method = 'POST'
+
       switch (type) {
         case 'create':
           endpoint = '/api/create'
@@ -31,17 +33,23 @@ export function usePolling() {
           break
         case 'getAvailableRooms':
           endpoint = '/api/rooms'
+          method = 'GET'
           break
         default:
           console.warn('Unknown message type:', type)
           return
       }
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
+      const options: RequestInit = {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+      }
+
+      if (method === 'POST') {
+        options.body = JSON.stringify(data)
+      }
+
+      const response = await fetch(endpoint, options)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

@@ -155,14 +155,15 @@ export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeav
 
   const handleChoice = (choice: Choice) => {
     if (gameStatus !== 'choosing' || !playerId) return
-    
+
     setPlayerChoice(choice)
     setAutoSelected(false) // Reset auto-selected flag when player makes choice
-    
+
     // Send choice to server
     sendMessage({
       type: 'choice',
       roomId,
+      playerId,
       choice
     })
   }
