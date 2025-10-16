@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0 0;
+    --foreground: 255 255 255;
+    --primary: 255 255 255;
+    --secondary: 240 240 240;
+    --accent: 200 200 200;
+  }
+  
+  body {
+    font-family: 'Times New Roman', Times, serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass {
+    @apply bg-black/10 backdrop-blur-md border border-white/20;
+  }
+  
+  .neon-glow {
+    @apply shadow-[0_0_15px_rgba(var(--primary),0.5)];
+  }
+  
+  .neon-glow-accent {
+    @apply shadow-[0_0_15px_rgba(var(--accent),0.5)];
+  }
+  
+  /* Enhanced color palette utilities */
+  .bg-gradient-minimal {
+    background: linear-gradient(135deg, 
+      rgb(var(--background)) 0%, 
+      #111111 100%);
+  }
+}
+
+body {
+  @apply bg-black text-white min-h-screen;
+  background: linear-gradient(135deg, rgb(var(--background)) 0%, #111111 100%);
+  background-attachment: fixed;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-black/50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/50 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-white;
+}
+
+/* Consistent emoji styling */
+.emoji {
+  filter: grayscale(100%) brightness(0%);
+}

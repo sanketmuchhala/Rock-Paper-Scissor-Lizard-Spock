@@ -1,0 +1,31 @@
+{
+  "name": "RPSLS: Hyperlink Edition",
+  "short_name": "RPSLS",
+  "description": "Pick a hand. Bend the odds.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0B1E",
+  "theme_color": "#8A5CF6",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
