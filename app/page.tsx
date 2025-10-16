@@ -14,9 +14,10 @@ export default function Home() {
   const [displayName, setDisplayName] = useState('')
   const [createdRoom, setCreatedRoom] = useState(false)
   const [roomId, setRoomId] = useState('')
+  const [playerId, setPlayerId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showIntro, setShowIntro] = useState(false)
-  
+
   const { isConnected, connect, sendMessage, subscribe } = useWebSocket()
 
   // Check if user has seen intro before
@@ -27,9 +28,11 @@ export default function Home() {
     }
   }, [])
 
-  // Initialize WebSocket connection
+  // Initialize player ID and WebSocket connection
   useEffect(() => {
+    setPlayerId(Math.random().toString(36).substring(2, 15))
     connect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleCreateRoom = () => {
@@ -46,10 +49,11 @@ export default function Home() {
   // Handle WebSocket messages for room creation
   useEffect(() => {
     if (!isConnected) return
-    
-    subscribe((data) => {
+
+    const unsubscribe = subscribe((data) => {
       if (data.type === 'roomCreated') {
         setRoomId(data.roomId)
+        setPlayerId(data.playerId)
         setIsLoading(false)
         setCreatedRoom(true)
       } else if (data.type === 'error') {
@@ -57,7 +61,9 @@ export default function Home() {
         setIsLoading(false)
       }
     })
-  }, [isConnected])
+
+    return unsubscribe
+  }, [isConnected, subscribe])
 
   const handleJoinRoom = () => {
     if (!displayName.trim()) return
@@ -122,7 +128,7 @@ export default function Home() {
   }
 
   if (createdRoom) {
-    return <GameRoom roomId={roomId} playerName={displayName} onLeave={() => setCreatedRoom(false)} />
+    return <GameRoom roomId={roomId} playerName={displayName} playerId={playerId} onLeave={() => setCreatedRoom(false)} />
   }
 
   return (

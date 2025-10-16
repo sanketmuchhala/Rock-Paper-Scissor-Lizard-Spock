@@ -16,27 +16,21 @@ interface RoomListProps {
   onJoinRoom: (roomId: string) => void
   onCreateRoom: () => void
   playerName: string
+  playerId: string
 }
 
-export function RoomList({ onJoinRoom, onCreateRoom, playerName }: RoomListProps) {
+export function RoomList({ onJoinRoom, onCreateRoom, playerName, playerId }: RoomListProps) {
   const [rooms, setRooms] = useState<RoomInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [joining, setJoining] = useState<string | null>(null)
-  const [playerId, setPlayerId] = useState<string>('')
-  
-  const { isConnected, connect, sendMessage, subscribe } = useWebSocket()
 
-  // Initialize WebSocket connection
-  useEffect(() => {
-    // Generate a player ID
-    setPlayerId(Math.random().toString(36).substring(2, 15))
-  }, [])
+  const { isConnected, connect, sendMessage, subscribe } = useWebSocket()
 
   // Handle WebSocket messages
   useEffect(() => {
     if (!isConnected) return
-    
+
     const unsubscribe = subscribe((data) => {
       switch (data.type) {
         case 'roomListUpdate':
@@ -55,13 +49,13 @@ export function RoomList({ onJoinRoom, onCreateRoom, playerName }: RoomListProps
           break
       }
     })
-    
+
     // Request available rooms
     sendMessage({ type: 'getAvailableRooms' })
-    
+
     // Cleanup subscription
     return unsubscribe
-  }, [isConnected, onJoinRoom])
+  }, [isConnected, onJoinRoom, subscribe, sendMessage])
 
   const handleRefresh = () => {
     if (isConnected) {
@@ -71,10 +65,14 @@ export function RoomList({ onJoinRoom, onCreateRoom, playerName }: RoomListProps
   }
 
   const handleJoinRoom = (roomId: string) => {
-    if (!isConnected) return
-    
+    if (!isConnected || !playerName.trim()) {
+      setError('Please enter your name first')
+      return
+    }
+
     setJoining(roomId)
-    
+    setError(null)
+
     sendMessage({
       type: 'join',
       roomId,

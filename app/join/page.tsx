@@ -30,7 +30,7 @@ export default function JoinRoom() {
   // Handle WebSocket messages
   useEffect(() => {
     if (!isConnected) return
-    
+
     const unsubscribe = subscribe((data) => {
       if (data.type === 'roomJoined') {
         setRoomId(data.roomId)
@@ -42,28 +42,29 @@ export default function JoinRoom() {
         setIsLoading(false)
       }
     })
-    
+
     // Cleanup subscription
     return unsubscribe
-  }, [isConnected])
+  }, [isConnected, subscribe])
 
-  const handleJoin = () => {
-    if (!roomId.trim() || !displayName.trim() || !isConnected) return
+  const handleJoin = (targetRoomId?: string) => {
+    const finalRoomId = targetRoomId || roomId
+    if (!finalRoomId.trim() || !displayName.trim() || !isConnected) return
     setIsLoading(true)
     setError(null)
-    
+
     // Send join room message to WebSocket server
     sendMessage({
       type: 'join',
-      roomId,
+      roomId: finalRoomId,
       playerName: displayName,
       playerId
     })
   }
 
-  const handleJoinRoom = (roomId: string) => {
-    setRoomId(roomId)
-    handleJoin()
+  const handleJoinRoom = (targetRoomId: string) => {
+    setRoomId(targetRoomId)
+    handleJoin(targetRoomId)
   }
 
   const handleCreateRoom = () => {
@@ -72,15 +73,16 @@ export default function JoinRoom() {
   }
 
   if (joined) {
-    return <GameRoom roomId={roomId} playerName={displayName} onLeave={() => setJoined(false)} />
+    return <GameRoom roomId={roomId} playerName={displayName} playerId={playerId} onLeave={() => setJoined(false)} />
   }
 
   if (showRoomList) {
     return (
-      <RoomList 
+      <RoomList
         onJoinRoom={handleJoinRoom}
         onCreateRoom={handleCreateRoom}
         playerName={displayName}
+        playerId={playerId}
       />
     )
   }
@@ -125,8 +127,8 @@ export default function JoinRoom() {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button 
-                onClick={handleJoin}
+              <Button
+                onClick={() => handleJoin()}
                 disabled={!roomId.trim() || !displayName.trim() || isLoading || !isConnected}
                 className="py-6 bg-white text-black hover:bg-gray-200 font-bold rounded-xl neon-glow transition-all duration-300 text-lg"
               >

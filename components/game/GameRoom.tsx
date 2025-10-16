@@ -13,11 +13,12 @@ import { useWebSocket } from '@/hooks/useWebSocket'
 interface GameRoomProps {
   roomId: string
   playerName: string
+  playerId?: string
   onLeave: () => void
 }
 
-export function GameRoom({ roomId, playerName, onLeave }: GameRoomProps) {
-  const [playerId, setPlayerId] = useState<string | null>(null)
+export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeave }: GameRoomProps) {
+  const [playerId, setPlayerId] = useState<string | null>(initialPlayerId || null)
   const [playerChoice, setPlayerChoice] = useState<Choice | null>(null)
   const [opponentChoice, setOpponentChoice] = useState<Choice | null>(null)
   const [timeLeft, setTimeLeft] = useState(10)
@@ -29,28 +30,91 @@ export function GameRoom({ roomId, playerName, onLeave }: GameRoomProps) {
   
   const { isConnected, error, connect, sendMessage, subscribe } = useWebSocket()
 
+  // Handle room updates from WebSocket
+  const handleRoomUpdate = useCallback((room: any) => {
+    // Check if this is our room
+    if (room.id !== roomId) return
+
+    // Determine if we are player A or player B
+    const isPlayerA = room.playerA && room.playerA.id === playerId
+    const isPlayerB = room.playerB && room.playerB.id === playerId
+
+    // Update opponent info
+    if (isPlayerA && room.playerB) {
+      setOpponentName(room.playerB.displayName)
+    } else if (isPlayerB && room.playerA) {
+      setOpponentName(room.playerA.displayName)
+    }
+
+    // Update game state based on room status
+    if (room.status === 'playing' && gameStatus === 'waiting') {
+      setGameStatus('choosing')
+      setTimeLeft(10)
+      setAutoSelected(false)
+    }
+
+    // Update scores based on our perspective
+    const playerAWins = room.rounds.filter((r: any) => r.winner === 'A').length
+    const playerBWins = room.rounds.filter((r: any) => r.winner === 'B').length
+    const ties = room.rounds.filter((r: any) => r.winner === 'tie').length
+
+    if (isPlayerA) {
+      setScore({
+        player: playerAWins,
+        opponent: playerBWins,
+        ties: ties
+      })
+    } else if (isPlayerB) {
+      setScore({
+        player: playerBWins,
+        opponent: playerAWins,
+        ties: ties
+      })
+    }
+
+    // Handle round results
+    if (room.rounds.length > 0) {
+      const latestRound = room.rounds[room.rounds.length - 1]
+      if (latestRound.playerAChoice && latestRound.playerBChoice) {
+        // Set choices based on our perspective
+        if (isPlayerA) {
+          setPlayerChoice(latestRound.playerAChoice)
+          setOpponentChoice(latestRound.playerBChoice)
+          const result = latestRound.winner
+          setWinnerResult(result === 'A' ? 'player' : result === 'B' ? 'opponent' : 'tie')
+        } else if (isPlayerB) {
+          setPlayerChoice(latestRound.playerBChoice)
+          setOpponentChoice(latestRound.playerAChoice)
+          const result = latestRound.winner
+          setWinnerResult(result === 'B' ? 'player' : result === 'A' ? 'opponent' : 'tie')
+        }
+        setGameStatus('result')
+      }
+    }
+  }, [roomId, gameStatus, playerId])
+
   // Initialize WebSocket connection
   useEffect(() => {
     connect()
-    
+
     // Clean up on unmount
     return () => {
       // Disconnect logic if needed
     }
-  }, [])
+  }, [connect])
 
   // Handle WebSocket messages
   useEffect(() => {
     if (!isConnected) return
-    
-    subscribe((data) => {
+
+    const unsubscribe = subscribe((data) => {
       switch (data.type) {
         case 'roomCreated':
-          setPlayerId(data.playerId)
+          if (!playerId) setPlayerId(data.playerId)
           setGameStatus('waiting')
           break
         case 'roomJoined':
-          setPlayerId(data.playerId)
+          if (!playerId) setPlayerId(data.playerId)
           setGameStatus('waiting')
           break
         case 'roomUpdate':
@@ -61,49 +125,9 @@ export function GameRoom({ roomId, playerName, onLeave }: GameRoomProps) {
           break
       }
     })
-  }, [isConnected])
 
-  // Handle room updates from WebSocket
-  const handleRoomUpdate = useCallback((room: any) => {
-    // Check if this is our room
-    if (room.id !== roomId) return
-    
-    // Update opponent info
-    if (room.playerB) {
-      setOpponentName(room.playerB.displayName)
-    }
-    
-    // Update game state based on room status
-    if (room.status === 'playing' && gameStatus === 'waiting') {
-      setGameStatus('choosing')
-      setTimeLeft(10)
-      setAutoSelected(false)
-    }
-    
-    // Update scores
-    const playerAWins = room.rounds.filter((r: any) => r.winner === 'A').length
-    const playerBWins = room.rounds.filter((r: any) => r.winner === 'B').length
-    const ties = room.rounds.filter((r: any) => r.winner === 'tie').length
-    
-    setScore({
-      player: playerAWins,
-      opponent: playerBWins,
-      ties: ties
-    })
-    
-    // Handle round results
-    if (room.rounds.length > 0) {
-      const latestRound = room.rounds[room.rounds.length - 1]
-      if (latestRound.playerAChoice && latestRound.playerBChoice) {
-        setPlayerChoice(latestRound.playerAChoice)
-        setOpponentChoice(latestRound.playerBChoice)
-        setGameStatus('result')
-        
-        const result = latestRound.winner
-        setWinnerResult(result === 'A' ? 'player' : result === 'B' ? 'opponent' : 'tie')
-      }
-    }
-  }, [roomId, gameStatus])
+    return unsubscribe
+  }, [isConnected, playerId, subscribe, handleRoomUpdate])
 
   // Timer effect
   useEffect(() => {
