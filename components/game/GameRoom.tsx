@@ -169,12 +169,19 @@ export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeav
   }
 
   const startRound = () => {
+    // Reset local UI state
     setPlayerChoice(null)
     setOpponentChoice(null)
     setWinnerResult(null)
     setTimeLeft(10)
     setGameStatus('choosing')
     setAutoSelected(false)
+
+    // Notify server to start new round (which starts the timer)
+    sendMessage({
+      type: 'startRound',
+      roomId
+    })
   }
 
   const resetGame = () => {

@@ -24,6 +24,8 @@ export interface Room {
   currentRound: number
   status: 'waiting' | 'playing' | 'finished'
   createdAt: Date
+  roundTimer?: NodeJS.Timeout | null
+  roundStartTime?: Date | null
 }
 
 export interface GameResult {

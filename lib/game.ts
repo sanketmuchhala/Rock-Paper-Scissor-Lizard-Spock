@@ -21,7 +21,9 @@ export class GameEngine {
       rounds: [],
       currentRound: 1,
       status: 'waiting',
-      createdAt: new Date()
+      createdAt: new Date(),
+      roundTimer: null,
+      roundStartTime: null
     }
 
     this.rooms.set(roomId, room)
@@ -54,7 +56,53 @@ export class GameEngine {
 
     room.playerB = playerB
     room.status = 'playing'
+
+    // Start the first round timer
+    this.startRoundTimer(room)
+
     return room
+  }
+
+  // Start round timer (10 seconds)
+  startRoundTimer(room: Room) {
+    // Clear any existing timer
+    if (room.roundTimer) {
+      clearTimeout(room.roundTimer)
+    }
+
+    room.roundStartTime = new Date()
+
+    // Set timer for 10 seconds
+    room.roundTimer = setTimeout(() => {
+      this.handleRoundTimeout(room)
+    }, 10000)
+  }
+
+  // Handle round timeout - auto-select random choices for players who haven't chosen
+  handleRoundTimeout(room: Room) {
+    console.log('Round timeout for room:', room.id)
+
+    // Generate random choices for players who haven't made a choice
+    const choices: Choice[] = ['rock', 'paper', 'scissors', 'lizard', 'spock']
+
+    if (room.playerA && !room.playerA.isReady) {
+      const randomChoice = choices[Math.floor(Math.random() * choices.length)]
+      room.playerA.choice = randomChoice
+      room.playerA.isReady = true
+      console.log('Auto-selected choice for player A:', randomChoice)
+    }
+
+    if (room.playerB && !room.playerB.isReady) {
+      const randomChoice = choices[Math.floor(Math.random() * choices.length)]
+      room.playerB.choice = randomChoice
+      room.playerB.isReady = true
+      console.log('Auto-selected choice for player B:', randomChoice)
+    }
+
+    // Resolve the round since both players are now ready
+    if (room.playerA?.isReady && room.playerB?.isReady) {
+      this.resolveRound(room)
+    }
   }
 
   // Get list of available rooms (rooms with only one player)
@@ -111,6 +159,11 @@ export class GameEngine {
 
     // Check if both players are ready
     if (room.playerA?.isReady && room.playerB?.isReady) {
+      // Clear the timer since both players have made their choices
+      if (room.roundTimer) {
+        clearTimeout(room.roundTimer)
+        room.roundTimer = null
+      }
       this.resolveRound(room)
     }
 
@@ -147,10 +200,18 @@ export class GameEngine {
 
     if (playerAWins >= 3 || playerBWins >= 3 || room.rounds.length >= 5) {
       room.status = 'finished'
+      // Clear any active timer
+      if (room.roundTimer) {
+        clearTimeout(room.roundTimer)
+        room.roundTimer = null
+      }
       // Schedule cleanup for this room after 5 minutes
       setTimeout(() => {
         this.rooms.delete(room.id)
       }, 300000) // 5 minutes
+    } else {
+      // Start timer for next round
+      this.startRoundTimer(room)
     }
   }
 
@@ -158,6 +219,12 @@ export class GameEngine {
   rematch(roomId: string): Room | null {
     const room = this.rooms.get(roomId)
     if (!room) return null
+
+    // Clear any active timer
+    if (room.roundTimer) {
+      clearTimeout(room.roundTimer)
+      room.roundTimer = null
+    }
 
     // Reset for a new game
     room.rounds = []
@@ -173,6 +240,40 @@ export class GameEngine {
       room.playerB.choice = undefined
       room.playerB.isReady = false
     }
+
+    // Start timer for first round of rematch
+    this.startRoundTimer(room)
+
+    return room
+  }
+
+  // Start a new round (called after showing results)
+  startNewRound(roomId: string): Room | null {
+    const room = this.rooms.get(roomId)
+    if (!room) return null
+
+    // Only allow starting new round if game is still playing
+    if (room.status !== 'playing') return null
+
+    // Clear any active timer
+    if (room.roundTimer) {
+      clearTimeout(room.roundTimer)
+      room.roundTimer = null
+    }
+
+    // Reset player choices for new round
+    if (room.playerA) {
+      room.playerA.choice = undefined
+      room.playerA.isReady = false
+    }
+
+    if (room.playerB) {
+      room.playerB.choice = undefined
+      room.playerB.isReady = false
+    }
+
+    // Start timer for new round
+    this.startRoundTimer(room)
 
     return room
   }

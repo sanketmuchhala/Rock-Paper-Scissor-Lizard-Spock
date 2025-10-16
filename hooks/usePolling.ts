@@ -31,6 +31,9 @@ export function usePolling() {
         case 'rematch':
           endpoint = '/api/rematch'
           break
+        case 'startRound':
+          endpoint = '/api/round'
+          break
         case 'getAvailableRooms':
           endpoint = '/api/rooms'
           method = 'GET'
@@ -75,6 +78,8 @@ export function usePolling() {
           callback({ type: 'choiceReceived' })
         } else if (type === 'rematch') {
           callback({ type: 'rematchAcknowledged' })
+        } else if (type === 'startRound') {
+          callback({ type: 'roundStarted', room: result.room })
         }
       })
 
