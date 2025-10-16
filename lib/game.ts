@@ -1,8 +1,22 @@
 import { Choice, Player, Room, Round } from '@/types/game'
 import { beats, winner } from './rpsls'
 
+// Global state cache to persist across serverless invocations
+// This ensures rooms persist during Vercel's execution context warm period (~5 min)
+declare global {
+  var gameRoomsCache: Map<string, Room> | undefined
+}
+
 export class GameEngine {
-  private rooms: Map<string, Room> = new Map()
+  private rooms: Map<string, Room>
+
+  constructor() {
+    // Use global cache if it exists, otherwise create new Map
+    if (!global.gameRoomsCache) {
+      global.gameRoomsCache = new Map()
+    }
+    this.rooms = global.gameRoomsCache
+  }
 
   // Create a new room
   createRoom(playerName: string): Room {
@@ -27,6 +41,7 @@ export class GameEngine {
     }
 
     this.rooms.set(roomId, room)
+    console.log(`[GameEngine] Room created: ${roomId}, Total rooms: ${this.rooms.size}`)
     return room
   }
 
@@ -107,17 +122,20 @@ export class GameEngine {
 
   // Get list of available rooms (rooms with only one player)
   getAvailableRooms(): { id: string; creatorName: string }[] {
+    console.log(`[GameEngine] Getting available rooms. Total rooms in memory: ${this.rooms.size}`)
     const availableRooms: { id: string; creatorName: string }[] = []
-    
+
     this.rooms.forEach((room, roomId) => {
+      console.log(`[GameEngine] Checking room ${roomId}: status=${room.status}, playerA=${!!room.playerA}, playerB=${!!room.playerB}`)
       // Check if room has only one player (playerA) and no playerB
       if (room.playerA && !room.playerB && room.status === 'waiting') {
         availableRooms.push({
           id: room.id,
           creatorName: room.playerA.displayName
         })
+        console.log(`[GameEngine] Room ${roomId} is available`)
       }
-      
+
       // Clean up finished rooms
       if (room.status === 'finished') {
         // Remove rooms that have been finished for more than 5 minutes
@@ -128,7 +146,8 @@ export class GameEngine {
         }
       }
     })
-    
+
+    console.log(`[GameEngine] Found ${availableRooms.length} available rooms`)
     return availableRooms
   }
 
