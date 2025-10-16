@@ -27,6 +27,12 @@ export function RoomList({ onJoinRoom, onCreateRoom, playerName, playerId }: Roo
 
   const { isConnected, connect, sendMessage, subscribe } = usePolling()
 
+  // Initialize connection
+  useEffect(() => {
+    connect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Handle WebSocket messages
   useEffect(() => {
     if (!isConnected) return

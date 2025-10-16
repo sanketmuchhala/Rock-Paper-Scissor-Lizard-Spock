@@ -25,6 +25,8 @@ export default function JoinRoom() {
   useEffect(() => {
     // Generate a player ID
     setPlayerId(Math.random().toString(36).substring(2, 15))
+    connect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Handle WebSocket messages
