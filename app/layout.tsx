@@ -24,7 +24,10 @@ export default function RootLayout({
         <meta name="theme-color" content="#8A5CF6" />
         <style dangerouslySetInnerHTML={{__html: `
           .emoji {
-            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", "Twemoji Mozilla", sans-serif;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
           }
         `}} />
       </head>

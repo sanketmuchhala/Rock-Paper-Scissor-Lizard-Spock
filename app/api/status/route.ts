@@ -23,8 +23,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Exclude roundTimer from response (can't be serialized to JSON)
+    const { roundTimer, ...roomData } = room
+
     return NextResponse.json({
-      room,
+      room: roomData,
       timestamp: new Date().toISOString()
     })
   } catch (error) {

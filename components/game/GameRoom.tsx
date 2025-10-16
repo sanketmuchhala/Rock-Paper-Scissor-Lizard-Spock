@@ -217,15 +217,30 @@ export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeav
           </Button>
         </div>
 
+        {/* Player Names Banner */}
+        <div className="mb-4 p-4 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex justify-between items-center">
+            <div className="flex-1">
+              <div className="text-xs text-gray-400 mb-1">You</div>
+              <div className="text-lg font-bold text-white">{playerName}</div>
+            </div>
+            <div className="text-2xl font-bold text-gray-500 px-4">VS</div>
+            <div className="flex-1 text-right">
+              <div className="text-xs text-gray-400 mb-1">Opponent</div>
+              <div className="text-lg font-bold text-white">{opponentName || 'Waiting...'}</div>
+            </div>
+          </div>
+        </div>
+
         {/* Score and Timer */}
         <div className="flex flex-wrap justify-between items-center mb-8 gap-4">
           <div className="flex gap-6">
             <div className="text-center">
-              <div className="text-xs text-gray-400">You</div>
+              <div className="text-xs text-gray-400">{playerName}</div>
               <div className="text-2xl font-bold text-white">{score.player}</div>
             </div>
             <div className="text-center">
-              <div className="text-xs text-gray-400">Opponent</div>
+              <div className="text-xs text-gray-400">{opponentName || 'Opponent'}</div>
               <div className="text-2xl font-bold text-white">{score.opponent}</div>
             </div>
             <div className="text-center">
@@ -233,7 +248,7 @@ export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeav
               <div className="text-2xl font-bold text-white">{score.ties}</div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full">
             <Timer className="w-4 h-4" />
             <span className="font-mono">{timeLeft}s</span>
