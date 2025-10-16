@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { GameRoom } from '@/components/game/GameRoom'
 import { RoomList } from '@/components/game/RoomList'
 import Link from 'next/link'
-import { useWebSocket } from '@/hooks/useWebSocket'
+import { usePolling } from '@/hooks/usePolling'
 
 export default function JoinRoom() {
   const [roomId, setRoomId] = useState('')
@@ -19,7 +19,7 @@ export default function JoinRoom() {
   const [playerId, setPlayerId] = useState('')
   const [error, setError] = useState<string | null>(null)
   
-  const { isConnected, connect, sendMessage, subscribe } = useWebSocket()
+  const { isConnected, connect, sendMessage, subscribe } = usePolling()
 
   // Initialize WebSocket connection
   useEffect(() => {

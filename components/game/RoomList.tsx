@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { RefreshCw } from 'lucide-react'
-import { useWebSocket } from '@/hooks/useWebSocket'
+import { usePolling } from '@/hooks/usePolling'
 
 interface RoomInfo {
   id: string
@@ -25,7 +25,7 @@ export function RoomList({ onJoinRoom, onCreateRoom, playerName, playerId }: Roo
   const [error, setError] = useState<string | null>(null)
   const [joining, setJoining] = useState<string | null>(null)
 
-  const { isConnected, connect, sendMessage, subscribe } = useWebSocket()
+  const { isConnected, connect, sendMessage, subscribe } = usePolling()
 
   // Handle WebSocket messages
   useEffect(() => {

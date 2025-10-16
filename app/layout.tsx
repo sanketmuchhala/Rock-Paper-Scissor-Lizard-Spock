@@ -18,9 +18,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="theme-color" content="#8A5CF6" />
+        <style dangerouslySetInnerHTML={{__html: `
+          .emoji {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+          }
+        `}} />
       </head>
       <body className={inter.className}>{children}</body>
     </html>

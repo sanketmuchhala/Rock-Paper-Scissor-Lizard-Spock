@@ -24,8 +24,8 @@ export async function POST(request: Request) {
     }
     
     return NextResponse.json({
-      success: true,
-      room
+      roomId: room.id,
+      playerId
     })
   } catch (error) {
     if (error instanceof z.ZodError) {

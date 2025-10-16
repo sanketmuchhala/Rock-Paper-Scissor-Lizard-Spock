@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { GameRoom } from '@/components/game/GameRoom'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { useWebSocket } from '@/hooks/useWebSocket'
+import { usePolling } from '@/hooks/usePolling'
 
 export default function Home() {
   const [displayName, setDisplayName] = useState('')
@@ -18,7 +18,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [showIntro, setShowIntro] = useState(false)
 
-  const { isConnected, connect, sendMessage, subscribe } = useWebSocket()
+  const { isConnected, connect, sendMessage, subscribe } = usePolling()
 
   // Check if user has seen intro before
   useEffect(() => {

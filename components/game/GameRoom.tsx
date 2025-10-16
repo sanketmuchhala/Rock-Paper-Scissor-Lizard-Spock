@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Timer, RotateCw } from 'lucide-react'
 import { choiceEmojis, choiceNames } from '@/lib/rpsls'
-import { useWebSocket } from '@/hooks/useWebSocket'
+import { usePolling } from '@/hooks/usePolling'
 
 interface GameRoomProps {
   roomId: string
@@ -28,7 +28,7 @@ export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeav
   const [opponentName, setOpponentName] = useState<string | null>(null)
   const [autoSelected, setAutoSelected] = useState(false) // Track if player's choice was auto-selected
   
-  const { isConnected, error, connect, sendMessage, subscribe } = useWebSocket()
+  const { isConnected, error, connect, sendMessage, subscribe, startPolling, stopPolling } = usePolling()
 
   // Handle room updates from WebSocket
   const handleRoomUpdate = useCallback((room: any) => {
@@ -93,15 +93,20 @@ export function GameRoom({ roomId, playerName, playerId: initialPlayerId, onLeav
     }
   }, [roomId, gameStatus, playerId])
 
-  // Initialize WebSocket connection
+  // Initialize connection and start polling
   useEffect(() => {
     connect()
+    if (roomId) {
+      startPolling(roomId)
+    }
 
     // Clean up on unmount
     return () => {
-      // Disconnect logic if needed
+      if (roomId) {
+        stopPolling(roomId)
+      }
     }
-  }, [connect])
+  }, [connect, roomId, startPolling, stopPolling])
 
   // Handle WebSocket messages
   useEffect(() => {
