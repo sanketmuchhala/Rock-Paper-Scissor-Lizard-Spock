@@ -19,7 +19,8 @@ export function useWebSocket() {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       // Connect to the WebSocket endpoint
       const wsUrl = `${protocol}//${window.location.host}/ws`
-      
+
+      console.log('Attempting to connect to WebSocket:', wsUrl)
       const websocket = new WebSocket(wsUrl)
       
       websocket.onopen = () => {
@@ -48,7 +49,7 @@ export function useWebSocket() {
       
       websocket.onerror = (err) => {
         console.error('WebSocket error:', err)
-        setError('WebSocket connection error')
+        setError('WebSocket connection error - multiplayer features unavailable')
         setIsConnected(false)
       }
       
