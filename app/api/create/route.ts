@@ -3,7 +3,15 @@ import { gameEngine } from '@/lib/game'
 
 export async function POST(request: NextRequest) {
   try {
-    const { playerName } = await request.json()
+    const body = await request.json()
+    const { playerName } = body
+
+    if (!playerName || typeof playerName !== 'string') {
+      return NextResponse.json(
+        { error: 'Player name is required' },
+        { status: 400 }
+      )
+    }
 
     const room = gameEngine.createRoom(playerName)
 
@@ -14,7 +22,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating room:', error)
     return NextResponse.json(
-      { error: 'Failed to create room' },
+      { error: 'Failed to create room', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

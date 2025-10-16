@@ -52,7 +52,13 @@ export function usePolling() {
       const response = await fetch(endpoint, options)
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const errorText = await response.text()
+        console.error(`HTTP error! status: ${response.status}, message: ${errorText}`)
+        setError(`Server error: ${response.status}`)
+        subscriptions.current.forEach(callback => {
+          callback({ type: 'error', message: `Server error: ${response.status}` })
+        })
+        return null
       }
 
       const result = await response.json()
@@ -76,11 +82,12 @@ export function usePolling() {
       return result
     } catch (err) {
       console.error('Error sending message:', err)
-      setError('Failed to communicate with server')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to communicate with server'
+      setError(errorMessage)
       subscriptions.current.forEach(callback => {
-        callback({ type: 'error', message: 'Failed to communicate with server' })
+        callback({ type: 'error', message: errorMessage })
       })
-      throw err
+      return null
     }
   }, [])
 
