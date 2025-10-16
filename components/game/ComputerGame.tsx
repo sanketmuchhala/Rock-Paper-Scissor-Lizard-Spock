@@ -7,7 +7,8 @@ import { GestureButton } from './GestureButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Timer, RotateCcw } from 'lucide-react'
-import { choiceEmojis, choiceNames, winner } from '@/lib/rpsls'
+import { choiceImages, choiceNames, winner } from '@/lib/rpsls'
+import Image from 'next/image'
 
 export function ComputerGame() {
   const [playerChoice, setPlayerChoice] = useState<Choice | null>(null)
@@ -198,7 +199,11 @@ export function ComputerGame() {
                       animate={{ opacity: 1 }}
                       className="flex flex-col items-center"
                     >
-                      <div className="text-6xl mb-2 emoji">{playerChoice ? choiceEmojis[playerChoice] : '❓'}</div>
+                      {playerChoice ? (
+                        <Image src={choiceImages[playerChoice]} alt={choiceNames[playerChoice]} width={100} height={100} className="mb-2" />
+                      ) : (
+                        <div className="text-6xl mb-2">❓</div>
+                      )}
                       <div className="text-lg capitalize">{playerChoice ? choiceNames[playerChoice] : '...'}</div>
                     </motion.div>
                   )}
@@ -267,7 +272,11 @@ export function ComputerGame() {
                       animate={{ opacity: 1 }}
                       className="flex flex-col items-center"
                     >
-                      <div className="text-6xl mb-2 emoji">{computerChoice ? choiceEmojis[computerChoice] : '❓'}</div>
+                      {computerChoice ? (
+                        <Image src={choiceImages[computerChoice]} alt={choiceNames[computerChoice]} width={100} height={100} className="mb-2" />
+                      ) : (
+                        <div className="text-6xl mb-2">❓</div>
+                      )}
                       <div className="text-lg capitalize">{computerChoice ? choiceNames[computerChoice] : '...'}</div>
                     </motion.div>
                   )}

@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { Choice } from '@/types/game'
-import { choiceEmojis, choiceNames } from '@/lib/rpsls'
+import { choiceImages, choiceNames } from '@/lib/rpsls'
+import Image from 'next/image'
 
 interface GestureButtonProps {
   choice: Choice
@@ -31,7 +32,7 @@ export function GestureButton({ choice, onClick, disabled, isSelected }: Gesture
         shadow-lg hover:shadow-xl
       `}
     >
-      <span className="text-2xl md:text-3xl lg:text-4xl mb-1 emoji">{choiceEmojis[choice]}</span>
+      <Image src={choiceImages[choice]} alt={choiceNames[choice]} width={48} height={48} className="mb-1" />
       <span className="text-xs md:text-sm font-medium">{choiceNames[choice]}</span>
       
       {/* Ripple effect */}

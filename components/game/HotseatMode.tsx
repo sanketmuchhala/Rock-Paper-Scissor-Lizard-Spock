@@ -7,7 +7,8 @@ import { GestureButton } from './GestureButton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { RotateCcw } from 'lucide-react'
-import { choiceEmojis, choiceNames, winner } from '@/lib/rpsls'
+import { choiceImages, choiceNames, winner } from '@/lib/rpsls'
+import Image from 'next/image'
 
 export function HotseatMode() {
   const [currentPlayer, setCurrentPlayer] = useState<1 | 2>(1)
@@ -124,7 +125,7 @@ export function HotseatMode() {
                       exit={{ opacity: 0 }}
                       className="flex flex-col items-center"
                     >
-                      <div className="text-6xl mb-2 emoji">{choiceEmojis[player1Choice]}</div>
+                      <Image src={choiceImages[player1Choice]} alt={choiceNames[player1Choice]} width={100} height={100} className="mb-2" />
                       <div className="text-lg capitalize">{choiceNames[player1Choice]}</div>
                     </motion.div>
                   )}
@@ -154,9 +155,11 @@ export function HotseatMode() {
                       animate={{ opacity: 1 }}
                       className="flex flex-col items-center"
                     >
-                      <div className="text-6xl mb-2 emoji">
-                        {player1Choice ? choiceEmojis[player1Choice] : '❓'}
-                      </div>
+                      {player1Choice ? (
+                        <Image src={choiceImages[player1Choice]} alt={choiceNames[player1Choice]} width={100} height={100} className="mb-2" />
+                      ) : (
+                        <div className="text-6xl mb-2">❓</div>
+                      )}
                       <div className="text-lg capitalize">{player1Choice ? choiceNames[player1Choice] : '...'}</div>
                     </motion.div>
                   )}
@@ -212,9 +215,11 @@ export function HotseatMode() {
                       animate={{ opacity: 1 }}
                       className="flex flex-col items-center"
                     >
-                      <div className="text-6xl mb-2 emoji">
-                        {player2Choice ? choiceEmojis[player2Choice] : '❓'}
-                      </div>
+                      {player2Choice ? (
+                        <Image src={choiceImages[player2Choice]} alt={choiceNames[player2Choice]} width={100} height={100} className="mb-2" />
+                      ) : (
+                        <div className="text-6xl mb-2">❓</div>
+                      )}
                       <div className="text-lg capitalize">{player2Choice ? choiceNames[player2Choice] : '...'}</div>
                     </motion.div>
                   )}

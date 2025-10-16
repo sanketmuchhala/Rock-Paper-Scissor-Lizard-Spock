@@ -11,12 +11,12 @@ import { Choice } from '@/types/game'
 
 export const choices: Choice[] = ['rock', 'paper', 'scissors', 'lizard', 'spock']
 
-export const choiceEmojis: Record<Choice, string> = {
-  rock: '✊',
-  paper: '✋',
-  scissors: '✌️',
-  lizard: '🤏',
-  spock: '🖖'
+export const choiceImages: Record<Choice, string> = {
+  rock: '/hands/rock.svg',
+  paper: '/hands/paper.svg',
+  scissors: '/hands/scissors.svg',
+  lizard: '/hands/lizard.svg',
+  spock: '/hands/spock.svg'
 }
 
 export const choiceNames: Record<Choice, string> = {
