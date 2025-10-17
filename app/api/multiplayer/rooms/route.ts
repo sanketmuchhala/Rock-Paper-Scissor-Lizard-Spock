@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { getAvailableRooms } from '@/lib/kv'
 import { RoomsListResponse } from '@/types/multiplayer'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const rooms = await getAvailableRooms()

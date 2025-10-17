@@ -3,6 +3,8 @@ import { validateRoomCode } from '@/lib/room-utils'
 import { getRoom, updateRoom } from '@/lib/kv'
 import { RoomStatusResponse } from '@/types/multiplayer'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams

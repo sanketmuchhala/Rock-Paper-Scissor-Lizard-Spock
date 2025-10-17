@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { MultiplayerGame } from '@/components/game/MultiplayerGame'
 import { Loader2 } from 'lucide-react'
 
-export default function GamePage() {
+function GamePageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [roomCode, setRoomCode] = useState<string | null>(null)
@@ -33,4 +33,16 @@ export default function GamePage() {
   }
 
   return <MultiplayerGame roomCode={roomCode} playerId={playerId} />
+}
+
+export default function GamePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Loader2 className="w-12 h-12 animate-spin text-white" />
+      </div>
+    }>
+      <GamePageContent />
+    </Suspense>
+  )
 }
