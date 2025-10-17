@@ -99,20 +99,28 @@ export default function Home() {
             <p className="text-lg text-gray-400 mt-2">Pick a hand. Bend the odds.</p>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Link href="/computer" className="block">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Link href="/multiplayer" className="block">
                 <Button
                   className="w-full py-6 bg-white text-black hover:bg-gray-200 font-bold rounded-xl neon-glow transition-all duration-300 text-lg"
                 >
-                  Play vs Computer
+                  Multiplayer
                 </Button>
               </Link>
-              <Link href="/hotseat" className="block">
+              <Link href="/computer" className="block">
                 <Button
                   variant="outline"
                   className="w-full py-6 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all duration-300 text-lg"
                 >
-                  Hot Seat Mode
+                  vs Computer
+                </Button>
+              </Link>
+              <Link href="/hotseat" className="block">
+                <Button
+                  variant="secondary"
+                  className="w-full py-6 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-700 transition-all duration-300 text-lg"
+                >
+                  Hot Seat
                 </Button>
               </Link>
             </div>
